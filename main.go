@@ -38,6 +38,12 @@ func main() {
 			} else {
 				pdfBytes, err = pdfgen.GeneratePayrollPDFViaHTML(payroll)
 			}
+		case "playwright":
+			if payroll.Country == "CA" {
+				pdfBytes, err = pdfgen.GenerateCanadaPayrollPDFViaPlaywright(payroll)
+			} else {
+				pdfBytes, err = pdfgen.GeneratePayrollPDFViaPlaywright(payroll)
+			}
 		default:
 			if payroll.Country == "CA" {
 				pdfBytes, err = pdfgen.GenerateCanadaPayrollPDF(payroll)
