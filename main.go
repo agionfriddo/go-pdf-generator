@@ -38,6 +38,16 @@ func main() {
 			} else {
 				pdfBytes, err = pdfgen.GeneratePayrollPDFViaHTML(payroll)
 			}
+		case "gotenberg":
+			baseURL := os.Getenv("GOTENBERG_URL")
+			if baseURL == "" {
+				baseURL = "http://localhost:3000"
+			}
+			if payroll.Country == "CA" {
+				pdfBytes, err = pdfgen.GenerateCanadaPayrollPDFViaGotenberg(payroll, baseURL)
+			} else {
+				pdfBytes, err = pdfgen.GeneratePayrollPDFViaGotenberg(payroll, baseURL)
+			}
 		default:
 			if payroll.Country == "CA" {
 				pdfBytes, err = pdfgen.GenerateCanadaPayrollPDF(payroll)
