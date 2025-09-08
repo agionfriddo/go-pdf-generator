@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pay Statement{{if .TitleSuffix}} - {{.TitleSuffix}}{{ end }}</title>
+    <style>
+      :root {
+        --fg: #111;
+        --muted: #555;
+        --border: #ddd;
+        --bg: #fff;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      .container {
+        padding: 24px;
+      }
+      h1 {
+        font-size: 20px;
+        margin: 0 0 16px;
+      }
+      h2 {
+        font-size: 16px;
+        margin: 16px 0 8px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 24px;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .section {
+        margin-top: 16px;
+      }
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+      }
+      .table th,
+      .table td {
+        border: 1px solid var(--border);
+        padding: 8px;
+        font-size: 12px;
+      }
+      .table th {
+        text-align: left;
+        background: #fafafa;
+      }
+      .right {
+        text-align: right;
+      }
+      .totals {
+        font-weight: 600;
+      }
+      .net {
+        font-size: 18px;
+        font-weight: 700;
+        margin-top: 16px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .address {
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>
+        Pay Statement {{if .TitleSuffix
+        }}<span class="muted">({{.TitleSuffix}})</span>{{ end }}
+      </h1>
+
+      <div class="grid">
+        <div>
+          <h2>Employer</h2>
+          <div>{{.Payroll.Employer.Name}}</div>
+          {{if .Options.ShowEmployerEmail}}
+          <div class="muted">{{.Payroll.Employer.Email}}</div>
+          {{else}}
+          <div class="muted">ID: {{.Payroll.Employer.ID}}</div>
+          {{ end }}
+          {{if .Options.ShowAddresses}}
+          {{if .Payroll.Employer.Address}}
+          <div class="address muted">{{.Payroll.Employer.Address}}</div>
+          {{ end }}
+          {{ end }}
+        </div>
+        <div>
+          <h2>Employee</h2>
+          <div>{{.Payroll.Employee.Name}}</div>
+          <div class="muted">{{.Payroll.Employee.Title}}</div>
+          {{if .Options.ShowAddresses}}
+          {{if .Payroll.Employee.Address}}
+          <div class="address muted">{{.Payroll.Employee.Address}}</div>
+          {{ end }}
+          {{ end }}
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Pay Period</h2>
+        <div class="grid">
+          <div>
+            Start: <span class="muted">{{.Payroll.PayPeriod.StartDate}}</span>
+          </div>
+          <div>
+            End: <span class="muted">{{.Payroll.PayPeriod.EndDate}}</span>
+          </div>
+          <div>
+            Pay Date: <span class="muted">{{.Payroll.PayPeriod.PayDate}}</span>
+          </div>
+          <div>
+            ID: <span class="muted">{{.Payroll.PayPeriod.PayPeriodID}}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Earnings</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th class="right">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{
+              range.Payroll.Earnings.Data
+            }}
+            <tr>
+              <td>{{.Name}}</td>
+              <td class="right">${{printf "%.2f" .Amount}}</td>
+            </tr>
+            {{
+              end
+            }}
+            <tr class="totals">
+              <td>Total</td>
+              <td class="right">${{printf "%.2f" $.Payroll.Earnings.Total}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2>Deductions</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th class="right">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{
+              range.Payroll.Deductions.Data
+            }}
+            <tr>
+              <td>{{.Name}}</td>
+              <td class="right">${{printf "%.2f" .Amount}}</td>
+            </tr>
+            {{
+              end
+            }}
+            <tr class="totals">
+              <td>Total</td>
+              <td class="right">
+                ${{printf "%.2f" $.Payroll.Deductions.Total}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {{if .Options.ShowBenefits}}
+      <div class="section">
+        <h2>Benefits</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th class="right">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{
+              range.Payroll.Benefits.Data
+            }}
+            <tr>
+              <td>{{.Name}}</td>
+              <td class="right">${{printf "%.2f" .Amount}}</td>
+            </tr>
+            {{
+              end
+            }}
+            <tr class="totals">
+              <td>Total</td>
+              <td class="right">${{printf "%.2f" $.Payroll.Benefits.Total}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      {{ end }}
+
+      <div class="net">
+        <div>Net Pay</div>
+        <div>${{printf "%.2f" .Payroll.NetPay}}</div>
+      </div>
+    </div>
+  </body>
+</html>

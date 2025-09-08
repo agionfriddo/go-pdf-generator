@@ -29,11 +29,21 @@ func main() {
 			return
 		}
 
+		method := r.URL.Query().Get("method")
 		var pdfBytes []byte
-		if payroll.Country == "CA" {
-			pdfBytes, err = pdfgen.GenerateCanadaPayrollPDF(payroll)
-		} else {
-			pdfBytes, err = pdfgen.GeneratePayrollPDF(payroll)
+		switch method {
+		case "html":
+			if payroll.Country == "CA" {
+				pdfBytes, err = pdfgen.GenerateCanadaPayrollPDFViaHTML(payroll)
+			} else {
+				pdfBytes, err = pdfgen.GeneratePayrollPDFViaHTML(payroll)
+			}
+		default:
+			if payroll.Country == "CA" {
+				pdfBytes, err = pdfgen.GenerateCanadaPayrollPDF(payroll)
+			} else {
+				pdfBytes, err = pdfgen.GeneratePayrollPDF(payroll)
+			}
 		}
 		if err != nil {
 			log.Printf("error generating pdf: %v", err)
@@ -50,7 +60,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "8081"
 	}
 	addr := ":" + port
 	log.Printf("server listening on %s", addr)
