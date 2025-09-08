@@ -14,7 +14,7 @@ import (
 	"github.com/agionfriddo/pdf-poc/internal/models"
 )
 
-//go:embed templates/paystub.html.tmpl
+//go:embed templates/*.tmpl templates/partials/*.tmpl
 var paystubTemplateFS embed.FS
 
 type htmlRenderOptions struct {
@@ -24,7 +24,8 @@ type htmlRenderOptions struct {
 }
 
 func renderHTML(p models.Payroll, opts RenderOptions, titleSuffix string) ([]byte, error) {
-	tpl, err := template.ParseFS(paystubTemplateFS, "templates/paystub.html.tmpl")
+
+	tpl, err := template.ParseFS(paystubTemplateFS, "templates/*.tmpl", "templates/partials/*.tmpl")
 	if err != nil {
 		return nil, fmt.Errorf("parse template: %w", err)
 	}

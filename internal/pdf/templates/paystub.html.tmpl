@@ -84,18 +84,7 @@
 
       <div class="grid">
         <div>
-          <h2>Employer</h2>
-          <div>{{.Payroll.Employer.Name}}</div>
-          {{if .Options.ShowEmployerEmail}}
-          <div class="muted">{{.Payroll.Employer.Email}}</div>
-          {{else}}
-          <div class="muted">ID: {{.Payroll.Employer.ID}}</div>
-          {{ end }}
-          {{if .Options.ShowAddresses}}
-          {{if .Payroll.Employer.Address}}
-          <div class="address muted">{{.Payroll.Employer.Address}}</div>
-          {{ end }}
-          {{ end }}
+          {{template "employer" .}}
         </div>
         <div>
           <h2>Employee</h2>
